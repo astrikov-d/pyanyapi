@@ -320,18 +320,31 @@ def test_children(sub_parser):
     assert api.parse_all() == {'elem': [{'href': '#test', 'text': 'test'}]}
 
 
+class BrokenObject(object):
+
+    def __str__(self):
+        return None
+
+
 @pytest.mark.parametrize(
-    'content',
+    'content, should_fail',
     (
-        'foo-bár',
-        b'foo-b\xc3\xa1r',
+        ('foo-bár', False),
+        (b'foo-b\xc3\xa1r', False),
+        (BrokenObject(), True)
     )
 )
-def test_indexof_parse(content):
+def test_indexof_parse(content, should_fail):
     parser = IndexOfParser({
         'has_bar': 'bár',
         'has_baz': 'báz',
     })
+
     parsed = parser.parse(content)
-    assert parsed.has_bar
-    assert not parsed.has_baz
+    if should_fail:
+        with pytest.raises(ResponseParseError):
+            parsed.has_bar
+            parsed.has_baz
+    else:
+        assert parsed.has_bar
+        assert not parsed.has_baz
