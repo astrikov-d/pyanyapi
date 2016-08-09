@@ -78,6 +78,7 @@ EMPTY_RESULT = object()
 
 
 class CombinedInterface(BaseInterface):
+
     def __init__(self, parsers, *args, **kwargs):
         self.parsers = parsers
         super(CombinedInterface, self).__init__(*args, **kwargs)
