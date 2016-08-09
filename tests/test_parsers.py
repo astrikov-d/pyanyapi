@@ -14,6 +14,7 @@ from pyanyapi import (
     AJAXParser,
     CSVParser,
     HTMLParser,
+    IndexOfParser
 )
 from pyanyapi.exceptions import ResponseParseError
 
@@ -317,3 +318,20 @@ def test_children(sub_parser):
     assert sub_api.href == '#test'
     assert sub_api.text == 'test'
     assert api.parse_all() == {'elem': [{'href': '#test', 'text': 'test'}]}
+
+
+@pytest.mark.parametrize(
+    'content',
+    (
+        'foo-bár',
+        b'foo-b\xc3\xa1r',
+    )
+)
+def test_indexof_parse(content):
+    parser = IndexOfParser({
+        'has_bar': 'bár',
+        'has_baz': 'báz',
+    })
+    parsed = parser.parse(content)
+    assert parsed.has_bar
+    assert not parsed.has_baz
