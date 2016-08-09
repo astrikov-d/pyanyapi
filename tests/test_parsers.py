@@ -342,9 +342,9 @@ def test_indexof_parse(content, should_fail):
 
     parsed = parser.parse(content)
     if should_fail:
-        with pytest.raises(ResponseParseError):
-            parsed.has_bar
-            parsed.has_baz
+        for attr in ('has_bar', 'has_baz'):
+            with pytest.raises(ResponseParseError):
+                getattr(parsed, attr)
     else:
         assert parsed.has_bar
         assert not parsed.has_baz
